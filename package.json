@@ -1,0 +1,16 @@
+{
+  "name": "dependency-attacks",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "mdx-deck deck.mdx",
+    "build": "mdx-deck build deck.mdx",
+    "help": "mdx-deck"
+  },
+  "dependencies": {
+    "is-email": "^1.0.1",
+    "mdx-deck": "^4.1.1",
+    "prompts": "^2.4.1"
+  }
+}

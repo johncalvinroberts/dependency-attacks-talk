@@ -1,0 +1,138 @@
+import { future, highlight } from '@mdx-deck/themes'
+import {NodeAttackEvil, NodeAttackEvilSmall} from './components/node-attack-evil'
+import Crumb from './components/crumb'
+
+export const theme = {
+  ...future,
+  ...highlight
+}
+
+# Hello Teammates.
+
+Let's have a quick talk about dependency attacks in Node JS.
+
+<NodeAttackEvil/>
+
+---
+<Crumb> 01. What is a dependency attack? </Crumb>
+
+<Steps>
+
+  - Also known as "supply chain attacks"
+  - Not just Node JS. Long history.
+  - In Node JS, there's also a long history.
+    - `left-pad` debacle
+    - `event-stream` debacle
+    - vulnerabilities frequently found in seemingly innocuous packages
+  - Basically, evil packages.
+  - Point being - There's clearly a security concern around your `package.json`.
+
+</Steps>
+
+---
+
+<Crumb> 02. What are some types of dependency attacks in Node JS? </Crumb>
+
+<Steps>
+
+  - Global leakage
+  - Prototype pollution/monkey patching
+  - Dependency-tree manipulation
+
+</Steps>
+
+---
+
+## Dependency tree manipulation
+
+Let's focus on this one.
+
+---
+
+<Crumb> 03. What is dependency tree manipulation? </Crumb>
+
+### The `require` global
+
+Firstly, did you know about `require.resolve`?
+
+---
+
+<Crumb> 03. What is dependency tree manipulation? </Crumb>
+
+```javascript
+const isEmail = require('is-email');
+console.log(isEmail('john@wiredcraft.com'));
+// true
+console.log(require.resolve('is-email'));
+// '/Users/john/code/johncalvinroberts/dependency-attacks/node_modules/is-email/lib/index.js'
+```
+
+---
+
+<Crumb> 03. What is dependency tree manipulation? </Crumb>
+
+Secondly, did you know about `require.cache`? 
+
+---
+
+<Crumb> 03. What is dependency tree manipulation? </Crumb>
+
+```javascript
+const isEmail = require('is-email');
+console.log(isEmail('john@wiredcraft.com'));
+// true
+const key = require.resolve('is-email');
+const cacheEntry = require.cache[key];
+// prints out a cache entry, which is used by other parts of my application
+```
+
+
+---
+
+<Crumb> 03. What is dependency tree manipulation? </Crumb>
+
+
+<NodeAttackEvilSmall/>
+
+---
+
+<Crumb> 04. 💀💀💀💀💀💀💀 </Crumb>
+
+```javascript
+const isEmail = require('is-email');
+// evil override
+const myEvilIsEmail = require('./evil-is-email');
+const isEmailKey = require.resolve('is-email');
+const myEvilIsEmailKey = require.resolve('./evil-is-email');
+// globally override the dependency at runtime
+require.cache[isEmailKey] = require.cache[myEvilIsEmailKey];
+// now we can intercept all emails passed to other dependency
+```
+
+---
+
+<Crumb> 04. 💀💀💀💀💀💀💀 </Crumb>
+
+[(show contrived demo now)](https://github.com/johncalvinroberts/dependency-attacks-talk/tree/demo)
+
+
+---
+
+<Crumb> 04. 💀💀💀💀💀💀💀 </Crumb>
+
+The purpose of this contrived demo is:
+
+<Steps>
+
+- Raise awareness of dependency-based attacks in Node JS
+- Show how `require.cache` can be a target for injection
+- Demonstrate how `require` can be abused
+- A real world attack would be much harder to introduce into the ecosystem.
+
+</Steps>
+
+---
+
+<Crumb> 04. 💀💀💀💀💀💀💀 </Crumb>
+
+That's it. Thanks for listening.
